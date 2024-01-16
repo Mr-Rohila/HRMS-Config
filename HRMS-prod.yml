@@ -1,0 +1,65 @@
+server:
+  port: 80
+spring:
+  application:
+    name: HRMS
+    
+  cloud:
+    gateway:
+       default-filters:
+        - DedupeResponseHeader=Access-Control-Allow-Credentials Access-Control-Allow-Origin
+       globalcors:
+        add-to-simple-url-handler-mapping: true
+        cors-configurations:
+          '[/**]':
+            allowedOrigins: "*"
+            allowedHeaders: "*"
+            allowedMethods: "*"
+            
+       routes:    
+       - id: ATTENDANCE-SERVICE
+         uri: lb://ATTENDANCE-SERVICE
+         predicates:
+         - Path=/attendance/**
+         
+       - id: EMPLOYEE-SERVICE
+         uri: lb://EMPLOYEE-SERVICE
+         predicates:
+         - Path=/employee/**
+         
+       - id: PAYROLL-SERVICE
+         uri: lb://PAYROLL-SERVICE
+         predicates:
+         - Path=/payroll/**
+
+springdoc:
+  api-docs:
+    enabled: true
+  swagger-ui:
+    enabled: true
+    path: /
+    config-url: /v3/api-docs/swagger-config
+    urls:
+      - name: API Gateway Service
+        url: /v3/api-docs
+       
+      - name: EMPLOYEE-SERVICE
+        url: /employee/v3/api-docs
+              
+      - name: ATTENDANCE-SERVICE
+        url: /attendance/v3/api-docs
+        
+      - name: PAYROLL-SERVICE
+        url: /payroll/v3/api-docs
+        
+
+logging:
+  level:
+    root: INFO
+  file:
+    name: G:\HRMS_API\HRMS\app.log
+              
+eureka:
+  client:
+    service-url:
+      defaultZone: http://192.168.1.60:8761/eureka
